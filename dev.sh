@@ -28,6 +28,21 @@ function shuffle_indices {
     echo $(seq $1 $2 | sort -R)
 }
 
+# shuffle elements of given array
+function shuffle_array {
+    local given_arr=("$@")
+    local shuffled_arr=()
+
+    local arr_size=$((${#given_arr[@]}-1))
+
+    while IFS= read -r line; do
+        shuffled_arr+=(${given_arr[$line]})
+    done < <(seq 0 $arr_size | sort -R)
+
+    # shuffled arr to stdout
+    echo "${shuffled_arr[@]}"
+}
+
 # infinitive, infinitive_english, tense, form_1p ... form 3p
 # gerund and pastparticiple have special rules
 function fetch_conjugations {
@@ -45,7 +60,7 @@ function fetch_conjugations {
     fi
 
     # only retain 6 conjugations and translation
-    result=$(awk -F'","' 'BEGIN {OFS=","} {print $8, $9, $10, $11, $12, $13, $2}' <<< $result)
+    result=$(awk -F'","' '{print $8, $9, $10, $11, $12, $13, $2}' <<< $result)
 
     # print the output to stdout 
     echo $result
@@ -53,3 +68,55 @@ function fetch_conjugations {
 
 
 
+# asks the user all 6 conjugations of a given verb in random manner
+function quiz_verb {
+    verb=$1
+    tense=$2
+
+    # find verb conjugations and store in arr
+    conjugations_arr=($(fetch_conjugations "$verb" "$tense" "Indicativo"))
+
+    # shuffle subject indices for randomization
+    subject_idx_arr=($(shuffle_indices 0 5))
+
+    # single verb loop
+    conjugated_wrong=false
+    curr=0
+
+    printf "$verb ${ITALICS}means${NO_ITALICS} \"${conjugations_arr[${#conjugations_arr[@]}-1]}\"."
+    printf " ${ITALICS}conjugate in${NO_ITALICS} $tense.\n" 
+
+    # iterate over all subjects random manner
+    while [[ $curr -lt "${#SUBJECTS[@]}" ]]; do
+        # fetch curr subject id
+        subject_idx=${subject_idx_arr[$curr]}
+
+        # get subject
+        temp_subject=${SUBJECTS[$subject_idx]}
+
+        # get verb's conjugation for temp_subject
+        temp_conj=${conjugations_arr[$subject_idx]}
+        
+        # if tried and wrong
+        if [[ $conjugated_wrong == "true" ]]; then
+            printf "${RED}"$verb" ${ITALICS}$temp_subject${NO_ITALICS} ${RESET}"
+        # initial try
+        else
+            printf ""$verb" ${ITALICS}$temp_subject${NO_ITALICS} "
+        fi
+        # get stdin from keyboard
+        read input
+
+        # remove 1 line up
+        printf "${MOVE_CURSOR_UP}${DELETE_LINE}"
+
+        # if tried and correct
+        if [[ $input == $temp_conj ]]; then    
+            printf "${GREEN}"$verb" ${ITALICS}$temp_subject${NO_ITALICS} $input${RESET}\n"
+            conjugated_wrong=false
+            ((curr++))
+        else
+            conjugated_wrong=true
+        fi
+    done
+}
