@@ -1,22 +1,6 @@
 #!/bin/bash
 
-infinitive=1
-infinitive_english=2
-mood=3
-mood_english=4
-tense=5
-tense_english=6
-verb_english=7
-form_1s=8
-form_2s=9
-form_3s=10
-form_1p=11
-form_2p=12
-form_3p=13
-gerund=14
-gerund_english=15
-pastparticiple=16
-pastparticiple_english=17
+source constants.sh
 
 # randint[low, high]
 function random_int {
@@ -66,12 +50,21 @@ function fetch_conjugations {
     echo $result
 }
 
+function fetch_all_verbs {
+    echo "fetching all verbs"
+}
 
+# query db to fetch saved verbs
+function fetch_my_verbs {
+    username=$1
+    echo "select verb from eljugador.verbs where username='${username}'" | psql -t
+}
 
-# asks the user all 6 conjugations of a given verb in random manner
+# asks the user subject_cnt conjugations of a given verb in given tense in random manner
 function quiz_verb {
-    verb=$1
-    tense=$2
+    local verb=$1
+    local tense=$2
+    local subject_cnt=$3
 
     # find verb conjugations and store in arr
     conjugations_arr=($(fetch_conjugations "$verb" "$tense" "Indicativo"))
@@ -87,7 +80,7 @@ function quiz_verb {
     printf " ${ITALICS}conjugate in${NO_ITALICS} $tense.\n" 
 
     # iterate over all subjects random manner
-    while [[ $curr -lt "${#SUBJECTS[@]}" ]]; do
+    while [[ $curr -lt "${subject_cnt}" ]]; do
         # fetch curr subject id
         subject_idx=${subject_idx_arr[$curr]}
 
