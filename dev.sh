@@ -50,8 +50,9 @@ function fetch_conjugations {
     echo $result
 }
 
+# fetch all unique verbs from verbs.csv
 function fetch_all_verbs {
-    echo "fetching all verbs"
+    echo "$(awk -F',' 'NR>1 {print substr($1,2,length($1)-2)}' verbs.csv | sort -u)"
 }
 
 # query db to fetch saved verbs

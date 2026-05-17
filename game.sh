@@ -16,8 +16,8 @@ SUBJECTS=("yo" "tu" "el/ella/usted" "nosotros" "vosotros" "ellos/ellas/Ustedes")
 TENSES=("Presente" "Preterito perfecto" "Preterito")
 
 # TODO: temporary
-VERBS=("tocar" "jugar" "ser" "nadar")
-temp_user=gozsoy
+QUIZ_LEN=10
+TEMP_USER=gozsoy
 
 universe_options=("all verbs" "only my verbs")
 printf "${BLUE}Select universe:${RESET}\n"
@@ -29,7 +29,7 @@ done
 if [[ $selected_universe == "all verbs" ]]; then
     verb_universe=($(fetch_all_verbs))
 else
-    verb_universe=($(fetch_my_verbs "$temp_user"))
+    verb_universe=($(fetch_my_verbs "$TEMP_USER"))
 fi
 
 tense_options=("${TENSES[@]}" "All")
@@ -67,7 +67,9 @@ function get_verb {
 
 
 # main iteration loop
-for verb in "${VERBS[@]}"; do
-    quiz_verb "${verb}" "$(get_tense $selected_tense)" $subject_cnt
+cnt=0
+while [[ $cnt -le $QUIZ_LEN ]]; do
+    quiz_verb "$(get_verb)" "$(get_tense $selected_tense)" $subject_cnt
     printf "\n"
+    ((cnt++))
 done
