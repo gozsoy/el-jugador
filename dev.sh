@@ -55,10 +55,26 @@ function fetch_all_verbs {
     echo "$(awk -F',' 'NR>1 {print substr($1,2,length($1)-2)}' verbs.csv | sort -u)"
 }
 
+# checks if given verb is valid
+# validity: exists in verbs.csv and does not in my_verbs.txt
+function check_if_valid {
+    # grab the correct line
+    local result1=$(grep "\"$1\"" verbs.csv)
+    local result2=$(grep "$1" my_verbs.txt)
+
+    # check if word found
+    if [[ 0 -eq $(wc -w <<< "$result1") ]]; then
+        echo "false"
+    elif [[ 0 -lt $(wc -w <<< "$result2") ]]; then
+        echo "duplicate"
+    else
+        echo "true"
+    fi
+}
+
 # query db to fetch saved verbs
 function fetch_my_verbs {
-    username=$1
-    echo "select verb from eljugador.verbs where username='${username}'" | psql -t
+    cat my_verbs.txt
 }
 
 # asks the user subject_cnt conjugations of a given verb in given tense in random manner

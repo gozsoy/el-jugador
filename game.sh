@@ -12,13 +12,44 @@ source dev.sh
 printf "${BLUE}Welcome to Conjugation Game!${RESET}\n\n"
 printf "$SPANISH_FLAG\n"
 
-SUBJECTS=("yo" "tu" "el/ella/usted" "nosotros" "vosotros" "ellos/ellas/Ustedes")
-TENSES=("Presente" "Preterito perfecto" "Preterito")
+# print number of saved verbs at the start
+printf "${ITALICS}You have $(wc -l < my_verbs.txt | xargs) saved verbs.${NO_ITALICS}\n"
 
-# TODO: temporary
-QUIZ_LEN=10
-TEMP_USER=gozsoy
+# serve actions menu
+mode_options=("new game!" "add new verb")
+printf "${BLUE}Select action:${RESET}\n"
+select selected_mode in "${mode_options[@]}"; do
+    break
+done
 
+# loop until user stops adding new verbs
+while [[ $selected_mode == "add new verb" ]]; do
+    # wait user input
+    printf "Enter verb:\n"
+    read input
+
+    # check if exists in verbs.csv
+    is_valid=$(check_if_valid $input)
+
+    if [[ $is_valid == "true" ]]; then
+        # save to my_verbs.txt
+        echo $input >> my_verbs.txt
+        printf "${GREEN}${input} saved successfully.${RESET}\n"
+    elif [[ $is_valid == "duplicate" ]]; then
+        printf "${RED}${input} already exists in your verbs.${RESET}\n"
+    else
+        printf "${RED}${input} is not valid. Try again.${RESET}\n"
+    fi
+
+    # serve actions menu again
+    printf "${BLUE}Select new action:${RESET}\n"
+    select selected_mode in "${mode_options[@]}"; do
+        break
+    done
+done
+
+
+# user starts the new game
 universe_options=("all verbs" "only my verbs")
 printf "${BLUE}Select universe:${RESET}\n"
 select selected_universe in "${universe_options[@]}"; do
@@ -29,7 +60,7 @@ done
 if [[ $selected_universe == "all verbs" ]]; then
     verb_universe=($(fetch_all_verbs))
 else
-    verb_universe=($(fetch_my_verbs "$TEMP_USER"))
+    verb_universe=($(fetch_my_verbs))
 fi
 
 tense_options=("${TENSES[@]}" "All")
@@ -65,11 +96,23 @@ function get_verb {
     echo "${verb_universe[$(random_int 0 $((${#verb_universe[@]} - 1)))]}"
 }
 
+# runs 1 quiz game session of QUIZ_LEN long
+function run_game {
+    cnt=0
 
-# main iteration loop
-cnt=0
-while [[ $cnt -le $QUIZ_LEN ]]; do
-    quiz_verb "$(get_verb)" "$(get_tense $selected_tense)" $subject_cnt
-    printf "\n"
-    ((cnt++))
-done
+    # main iteration loop
+    while [[ $cnt -lt $QUIZ_LEN ]]; do
+        quiz_verb "$(get_verb)" "$(get_tense $selected_tense)" $subject_cnt
+        printf "\n"
+        cnt=$(( cnt + subject_cnt ))
+    done
+
+    echo "Game ended. Press ENTER for new game or ESC to exit."
+    read -rsn1 input
+
+    if [[ $input != $'\e' ]]; then
+        run_game
+    fi
+}
+
+run_game

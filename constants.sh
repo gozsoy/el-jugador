@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# grammar
+SUBJECTS=("yo" "tu" "el/ella/usted" "nosotros" "vosotros" "ellos/ellas/Ustedes")
+TENSES=("Presente" "Preterito perfecto" "Preterito")
+
+# game config
+QUIZ_LEN=2
+
 # text colors
 RED="\e[31m" 
 GREEN="\e[32m"
@@ -14,7 +21,7 @@ BG_YELLOW="\e[43m"
 ITALICS="\e[3m"
 NO_ITALICS="\e[23m"
 
-# misc
+# misc formatting
 MOVE_CURSOR_UP="\033[1A"
 DELETE_LINE="\033[2K"
 RESET="\e[0m"
