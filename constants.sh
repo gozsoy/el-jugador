@@ -20,6 +20,8 @@ BG_YELLOW="\e[43m"
 # styling
 ITALICS="\e[3m"
 NO_ITALICS="\e[23m"
+BOLD="\e[1m"
+NO_BOLD="\e[22m"
 
 # misc formatting
 MOVE_CURSOR_UP="\033[1A"

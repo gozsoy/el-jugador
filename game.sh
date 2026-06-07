@@ -9,11 +9,14 @@ set +a
 source constants.sh
 source dev.sh
 
-printf "${BLUE}Welcome to Conjugation Game!${RESET}\n\n"
+printf "${BOLD}${BLUE}Welcome to Conjugation Game!${RESET}\n\n"
 printf "$SPANISH_FLAG\n"
 
+# print game rules
+printf "${ITALICS}Each game consists of ${BOLD}${QUIZ_LEN}${NO_BOLD} conjugations. Type ${BOLD}hint${NO_BOLD} anytime to see the answer.${NO_ITALICS}\n"
+
 # print number of saved verbs at the start
-printf "${ITALICS}You have $(wc -l < my_verbs.txt | xargs) saved verbs.${NO_ITALICS}\n"
+printf "${ITALICS}You have already saved ${BOLD}$(wc -l < my_verbs.txt | xargs)${NO_BOLD} verbs.${NO_ITALICS}\n\n"
 
 # serve actions menu
 mode_options=("new game!" "add new verb")

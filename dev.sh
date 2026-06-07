@@ -44,10 +44,10 @@ function fetch_conjugations {
     fi
 
     # only retain 6 conjugations and translation
-    result=$(awk -F'","' '{print $8, $9, $10, $11, $12, $13, $2}' <<< $result)
+    result=$(awk -F'","' '{print $8"\n"$9"\n"$10"\n"$11"\n"$12"\n"$13"\n"$2}' <<< $result)
 
     # print the output to stdout 
-    echo $result
+    echo "$result"
 }
 
 # fetch all unique verbs from verbs.csv
@@ -84,7 +84,10 @@ function quiz_verb {
     local subject_cnt=$3
 
     # find verb conjugations and store in arr
-    conjugations_arr=($(fetch_conjugations "$verb" "$tense" "Indicativo"))
+    local conjugations_arr=()
+    while IFS= read -r line; do
+        conjugations_arr+=("$line")
+    done < <(fetch_conjugations "$verb" "$tense" "Indicativo")
 
     # shuffle subject indices for randomization
     subject_idx_arr=($(shuffle_indices 0 5))
@@ -123,6 +126,11 @@ function quiz_verb {
         # if tried and correct
         if [[ $input == $temp_conj ]]; then    
             printf "${GREEN}"$verb" ${ITALICS}$temp_subject${NO_ITALICS} $input${RESET}\n"
+            conjugated_wrong=false
+            ((curr++))
+        # if typed "hint", show answer
+        elif  [[ $input == "hint" ]]; then
+            printf ""$verb" ${ITALICS}$temp_subject${NO_ITALICS} ${YELLOW}$temp_conj${RESET}\n"
             conjugated_wrong=false
             ((curr++))
         else
