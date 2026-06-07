@@ -5,7 +5,7 @@ SUBJECTS=("yo" "tu" "el/ella/usted" "nosotros" "vosotros" "ellos/ellas/Ustedes")
 TENSES=("Presente" "Preterito perfecto" "Preterito")
 
 # game config
-QUIZ_LEN=2
+QUIZ_LEN=24
 
 # text colors
 RED="\e[31m" 

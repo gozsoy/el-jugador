@@ -101,21 +101,23 @@ function get_verb {
 
 # runs 1 quiz game session of QUIZ_LEN long
 function run_game {
-    cnt=0
+    while true; do
+        cnt=0
 
-    # main iteration loop
-    while [[ $cnt -lt $QUIZ_LEN ]]; do
-        quiz_verb "$(get_verb)" "$(get_tense $selected_tense)" $subject_cnt
-        printf "\n"
-        cnt=$(( cnt + subject_cnt ))
+        # main iteration loop
+        while [[ $cnt -lt $QUIZ_LEN ]]; do
+            quiz_verb "$(get_verb)" "$(get_tense $selected_tense)" $subject_cnt
+            printf "\n"
+            cnt=$(( cnt + subject_cnt ))
+        done
+
+        echo "Game ended. Press ENTER for new game or ESC to exit."
+        read -rsn1 input
+
+        if [[ $input == $'\e' ]]; then
+            break
+        fi
     done
-
-    echo "Game ended. Press ENTER for new game or ESC to exit."
-    read -rsn1 input
-
-    if [[ $input != $'\e' ]]; then
-        run_game
-    fi
 }
 
 run_game

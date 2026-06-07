@@ -20,7 +20,7 @@ function shuffle_array {
     local arr_size=$((${#given_arr[@]}-1))
 
     while IFS= read -r line; do
-        shuffled_arr+=(${given_arr[$line]})
+        shuffled_arr+=("${given_arr[$line]}")
     done < <(seq 0 $arr_size | sort -R)
 
     # shuffled arr to stdout
@@ -35,7 +35,7 @@ function fetch_conjugations {
     local mood="\"$3\""
 
     # grab the correct line
-    local result=$(grep "$verb" verbs.csv | grep "$tense" | grep "$mood")
+    local result=$(grep "$verb" verbs.csv | grep ",$tense," | grep ",$mood,")
 
     # check if word found
     if [[ 0 -eq $(wc -w <<< "$result") ]]; then
@@ -44,7 +44,7 @@ function fetch_conjugations {
     fi
 
     # only retain 6 conjugations and translation
-    result=$(awk -F'","' '{print $8"\n"$9"\n"$10"\n"$11"\n"$12"\n"$13"\n"$2}' <<< $result)
+    result=$(awk -F'","' '{print $8"\n"$9"\n"$10"\n"$11"\n"$12"\n"$13"\n"$2}' <<< "$result")
 
     # print the output to stdout 
     echo "$result"
@@ -58,14 +58,13 @@ function fetch_all_verbs {
 # checks if given verb is valid
 # validity: exists in verbs.csv and does not in my_verbs.txt
 function check_if_valid {
-    # grab the correct line
-    local result1=$(grep "\"$1\"" verbs.csv)
-    local result2=$(grep "$1" my_verbs.txt)
+    # grab the correct line (beginning of line holds the verb ^)
+    local result1=$(grep "^\"$1\"" verbs.csv)
 
     # check if word found
     if [[ 0 -eq $(wc -w <<< "$result1") ]]; then
         echo "false"
-    elif [[ 0 -lt $(wc -w <<< "$result2") ]]; then
+    elif grep -xq -- "$1" my_verbs.txt; then
         echo "duplicate"
     else
         echo "true"
