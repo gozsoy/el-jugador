@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# load env vars
-set -a
-source .env
-set +a
-
 # import helpers
 source constants.sh
 source dev.sh
