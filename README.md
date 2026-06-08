@@ -19,7 +19,8 @@ make run
 ## Windows
 
 1. Install [Git for Windows](https://gitforwindows.org)
-2. Double-click `run.bat`
+2. `git clone https://github.com/gozsoy/el-jugador && cd el-jugador`
+3. Double-click `run.bat`
 
 
 ## Credits
