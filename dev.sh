@@ -2,6 +2,13 @@
 
 source constants.sh
 
+# create my_verbs.txt if not exists
+function create_my_verbs_file {
+    local file_path="./my_verbs.txt"
+    [[ -e "$file_path" ]] || touch "$file_path"
+}
+
+
 # randint[low, high]
 function random_int {
     echo $(( $1 + RANDOM % ($2 - $1 + 1) ))

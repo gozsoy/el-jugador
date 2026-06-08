@@ -4,6 +4,9 @@
 source constants.sh
 source dev.sh
 
+# create personal txt file if not exists
+create_my_verbs_file
+
 printf "${BOLD}${BLUE}Welcome to Conjugation Game!${RESET}\n\n"
 printf "$SPANISH_FLAG\n"
 
